@@ -26,6 +26,7 @@
     import { state } from '@/scripts/store';
 
     // Define sensor dropdowns
+    // All sensors are hardcoded for now, but they can be fetched once Ricky (Data engineering) has finished his query stuff, if you are reading this, assume he never did.
     const sensors = ref([
       { id: 'oxygen', label: 'Oxygen Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
       { id: 'ph', label: 'pH Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
