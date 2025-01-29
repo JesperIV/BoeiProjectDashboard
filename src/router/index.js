@@ -4,11 +4,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/red',
-      name: 'red',
-      component: () => import('../views/RedView.vue'),
-    },
-    {
       path: '/',  // Empty so that is the default
       name: 'info',
       component: () => import('../views/InfoView.vue'),

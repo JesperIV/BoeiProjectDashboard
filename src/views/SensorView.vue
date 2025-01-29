@@ -75,7 +75,7 @@
         VALUES ('${sensorId.value}', '${sensorName.value}', '${sensorType.value}', '${sensorUnit.value}')`
       };
     
-      fetch('http://141.144.198.96:1880/sqlquery', {
+      fetch('https://ricky-boeien.ddns.net:1880/sqlquery', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

@@ -50,7 +50,7 @@
   };
   
   // Het GET-request for sensor data
-  fetch('http://141.144.198.96:1880/getList?type=allesensors')
+  fetch('https://ricky-boeien.ddns.net:1880/getList?type=allesensors')
   .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -70,7 +70,7 @@
   const fetchSensorHistory = () => {
     sensorHistory.value = [];
 
-    fetch('http://141.144.198.96:1880/getlist?type=geschiedenisspecifiekesensor&sensor_serienummer=' + selectedSensor.value)
+    fetch('https://ricky-boeien.ddns.net:1880/getlist?type=geschiedenisspecifiekesensor&sensor_serienummer=' + selectedSensor.value)
     .then(response => {
         if (!response.ok) {
             throw new Error('Netwerk reaction was NOT okay');

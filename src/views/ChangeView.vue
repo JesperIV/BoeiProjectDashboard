@@ -4,15 +4,31 @@
       <div class="title-bar">
         <h1>Change sensors for Boei with ID: {{ state.selectedBoei }}</h1>
       </div>
-  
-      <!-- Sensor Dropdowns -->
-      <div class="form-group" v-for="(sensor, index) in sensors" :key="index">
-        <label :for="sensor.id">{{ sensor.label }}</label>
-        <select :id="sensor.id" v-model="sensor.selected">
+
+      <div class="form-group">
+        <label for="oxygenOption">Oxygen Sensor</label>
+        <select id="oxygenOption">
           <option disabled value="">Select a sensor</option>
-          <option v-for="option in sensor.options" :key="option" :value="option">
-            {{ option }}
-          </option>
+        </select>
+
+        <label for="phOption">pH Sensor</label>
+        <select id="phOption">
+          <option disabled value="">Select a sensor</option>
+        </select>
+
+        <label for="turbOption">Turbidity Sensor</label>
+        <select id="turbOption">
+          <option disabled value="">Select a sensor</option>
+        </select>
+
+        <label for="ecOption">Electrical Conductivity (EC) Sensor</label>
+        <select id="ecOption">
+          <option disabled value="">Select a sensor</option>
+        </select>
+
+        <label for="tempOption">Temperature Sensor</label>
+        <select id="tempOption">
+          <option disabled value="">Select a sensor</option>
         </select>
       </div>
   
@@ -22,30 +38,147 @@
   </template>
   
   <script setup>
-    import { ref } from 'vue';
     import { state } from '@/scripts/store';
 
-    // Define sensor dropdowns
-    // All sensors are hardcoded for now, but they can be fetched once Ricky (Data engineering) has finished his query stuff, if you are reading this, assume he never did.
-    const sensors = ref([
-      { id: 'oxygen', label: 'Oxygen Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
-      { id: 'ph', label: 'pH Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
-      { id: 'turbidity', label: 'Turbidity Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
-      { id: 'ec', label: 'Electrical Conductivity (EC) Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
-      { id: 'temperature', label: 'Temperature Sensor', selected: '', options: ['Option 1', 'Option 2', 'Option 3'] },
-    ]);
+    let oldSensors = {  //  Object to store old sensors
+      oxygen: '',
+      ph: '',
+      turbidity: '',
+      ec: '',
+      temperature: '',
+    };
 
-    // Mock function for setting sensors
+    //  Get options for each sensor
+    fetch('https://ricky-boeien.ddns.net:1880/getList?type=allesensors')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Netwerk reaction was NOT okay');
+        }
+        return response.json();
+    })
+    .then(data => {
+        data.forEach(sensor => {
+          if(sensor.TYPE === 'Oxygen') {
+            document.getElementById('oxygenOption').innerHTML += `<option value="${sensor.SERIENUMMER}">${sensor.SENSOR_NAAM}</option>`;
+          } else if(sensor.TYPE === 'pH') {
+            document.getElementById('phOption').innerHTML += `<option value="${sensor.SERIENUMMER}">${sensor.SENSOR_NAAM}</option>`;
+          } else if(sensor.TYPE === 'Turbidity') {
+            document.getElementById('turbOption').innerHTML += `<option value="${sensor.SERIENUMMER}">${sensor.SENSOR_NAAM}</option>`;
+          } else if(sensor.TYPE === 'Electrical Conductivity (EC)') {
+            document.getElementById('ecOption').innerHTML += `<option value="${sensor.SERIENUMMER}">${sensor.SENSOR_NAAM}</option>`;
+          } else if(sensor.TYPE === 'Temperature') {
+            document.getElementById('tempOption').innerHTML += `<option value="${sensor.SERIENUMMER}">${sensor.SENSOR_NAAM}</option>`;
+          }
+        });
+    })
+    .catch(error => {
+        console.error('There is a problem with receiving the boeienlijst:', error);
+    });
+
+    //  Set current sensors as default option if a Boei is selected
+    if (state.selectedBoei === '') {  // Check if a Boei is selected
+      alert('No Boei selected!\nPlease select a Boei and reopen this section.');  // For some reason pushing a router path doesnt work, so for now I use an alert with instructions
+    } else {
+      fetch('https://ricky-boeien.ddns.net:1880/getList?type=sensorsperboei&boeien_id_name=' + state.selectedBoei)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Netwerk reaction was NOT okay');
+          }
+          return response.json();
+      })
+      .then(data => {
+          data.forEach(sensor => {
+            if(sensor.TYPE === 'Oxygen') {
+              document.getElementById('oxygenOption').value = sensor.SERIENUMMER;
+            } else if(sensor.TYPE === 'pH') {
+              document.getElementById('phOption').value = sensor.SERIENUMMER;
+            } else if(sensor.TYPE === 'Turbidity') {
+              document.getElementById('turbOption').value = sensor.SERIENUMMER;
+            } else if(sensor.TYPE === 'Electrical Conductivity (EC)') {
+              document.getElementById('ecOption').value = sensor.SERIENUMMER;
+            } else if(sensor.TYPE === 'Temperature') {
+              document.getElementById('tempOption').value = sensor.SERIENUMMER;
+            }
+          });
+
+          // Set old sensors BEFORE setting new sensors
+          oldSensors = {
+            oxygen: document.getElementById('oxygenOption').value,
+            ph: document.getElementById('phOption').value,
+            turbidity: document.getElementById('turbOption').value,
+            ec: document.getElementById('ecOption').value,
+            temperature: document.getElementById('tempOption').value,
+          };
+      })
+      .catch(error => {
+          console.error('There is a problem with receiving the boeienlijst:', error);
+      });
+    }
+
+    //  Function for setting sensors
     const setSensors = () => {
-      const selectedSensors = sensors.value.map((sensor) => ({
-        label: sensor.label,
-        selected: sensor.selected,
-      }));
-      if (selectedSensors.every((sensor) => sensor.selected)) {
-        alert(`Sensors updated:\n${selectedSensors.map((s) => `${s.label}: ${s.selected}`).join('\n')}`);
-      } else {
-        alert('Please select options for all sensors before setting.');
+      const newSensors = {
+        oxygen: document.getElementById('oxygenOption').value,
+        ph: document.getElementById('phOption').value,
+        turbidity: document.getElementById('turbOption').value,
+        ec: document.getElementById('ecOption').value,
+        temperature: document.getElementById('tempOption').value,
+      };
+
+      let changedSensors = {
+        oxygen: false,
+        ph: false,
+        turbidity: false,
+        ec: false,
+        temperature: false,
       }
+
+      if (oldSensors.oxygen !== newSensors.oxygen) {
+        changedSensors.oxygen = true;
+      }
+      if (oldSensors.ph !== newSensors.ph) {
+        changedSensors.ph = true;
+      }
+      if (oldSensors.turbidity !== newSensors.turbidity) {
+        changedSensors.turbidity = true;
+      }
+      if (oldSensors.ec !== newSensors.ec) {
+        changedSensors.ec = true;
+      }
+      if (oldSensors.temperature !== newSensors.temperature) {
+        changedSensors.temperature = true;
+      }
+
+      //  Generate JSON
+      const sensorUpdate = Object.keys(oldSensors)
+      .filter(key => changedSensors[key])  // Filter keys based on changedSensors
+      .map(key => {
+        return {
+          oude_sensor: oldSensors[key],
+          nieuwe_sensor: newSensors[key]
+        };
+      });
+
+      const jsonPayload = { //  JSON payload
+        boei_id: state.selectedBoei,
+        sensor_updates: sensorUpdate
+      };
+
+      //  Send JSON
+      fetch("https://ricky-boeien.ddns.net:1880/update-sensors", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonPayload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
     };
   </script>
   
@@ -58,20 +191,20 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    padding: 10px; /* Reduced padding */
+    padding: 10px;
     background-color: #f9f9f9;
     box-sizing: border-box;
   }
   
   /* Title Bar styles */
   .title-bar {
-    margin-bottom: 10px; /* Reduced margin */
+    margin-bottom: 10px;
     text-align: center;
     width: 100%;
   }
   
   .title-bar h1 {
-    font-size: 1.5rem; /* Reduced font size */
+    font-size: 1.5rem; 
     color: #333;
   }
   
@@ -80,20 +213,20 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 500px; /* Reduced max width */
-    margin-bottom: 10px; /* Reduced margin */
+    max-width: 500px; 
+    margin-bottom: 10px; 
   }
   
   .form-group label {
-    margin-bottom: 3px; /* Reduced margin */
+    margin-bottom: 3px; 
     font-weight: bold;
-    font-size: 0.85rem; /* Reduced font size */
+    font-size: 0.85rem; 
     color: #555;
   }
   
   .form-group select {
-    padding: 6px; /* Reduced padding */
-    font-size: 0.9rem; /* Reduced font size */
+    padding: 6px; 
+    font-size: 0.9rem; 
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;

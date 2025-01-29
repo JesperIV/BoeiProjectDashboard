@@ -69,10 +69,12 @@
   const selectedBoei = ref('');
   const saveSelection = () => {
     state.selectedBoei = selectedBoei.value;
+    state.selectedDate = currentDate.value;
     updateGraphs();
+    updateIndividualCharts();
   };
   
-  fetch('http://141.144.198.96:1880/getList?type=alleboeien')
+  fetch('https://ricky-boeien.ddns.net:1880/getList?type=alleboeien')
   .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -93,7 +95,7 @@
     console.log('Start updateGraphs');
 
     // Het GET-request for EC readings of selected boei
-    fetch('http://141.144.198.96:1880/getlist?type=egvvanboeiperdag&boeien_id_name=' + state.selectedBoei + '&datum=' + currentDate.value)
+    fetch('https://ricky-boeien.ddns.net:1880/getlist?type=egvvanboeiperdag&boeien_id_name=' + state.selectedBoei + '&datum=' + currentDate.value)
     .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -112,9 +114,6 @@
 
       data.forEach((reading) => {
         const timestamp = new Date(reading.DATUM_TIJD).toLocaleString();  // Convert the timestamp
-        //ecData.labels.push(timestamp);  // Add timestamp to the labels
-        //ecData.datasets[i].data.push(parseFloat(reading.EGV));  // Add the value to the dataset
-        //i++;
 
         newLabels.push(timestamp);
         newData.push(parseFloat(reading.EGV));
@@ -130,6 +129,16 @@
     })
     .catch(error => {
       console.error('There is a problem with receiving the boeienlijst:', error);
+    });
+  }
+
+  const childRefs = ref([]);  //  Empty ref array because apparently components are rendered later so this is needed to make sure the components are ready
+
+  const updateIndividualCharts = () => {
+    childRefs.value.forEach((childRef) => {
+      if(childRef) {  //  Check if the childRef is ready
+        childRef.updateChart();
+      }
     });
   }
 </script>
@@ -151,10 +160,7 @@
             <input type="date" id="selected-date" v-model="currentDate" />
             <button class="set-button" @click="saveSelection">Set</button>
           </div>
-
-          <div class="date-selector">
-            
-
+            <div class="date-selector">
           </div>
 
           <button class="logout-button">Logout</button>

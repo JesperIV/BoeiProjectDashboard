@@ -37,7 +37,7 @@
   import { ref } from 'vue';
   
   // Het GET-request for boei data
-  fetch('http://141.144.198.96:1880/getList?type=alleboeien')
+  fetch('https://ricky-boeien.ddns.net:1880/getList?type=alleboeien')
   .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -57,7 +57,7 @@
   let tempIsoDate = new Date(); //  Make an empty date to format the date received from the fetch request which is in ISO 8601 (apparently)
   const getLocations = () => {
     console.log('Starting fetch request.');
-    fetch('http://141.144.198.96:1880/getlist?type=geschiedenisboei&boeien_id_name=' + selectedBoei.value)
+    fetch('https://ricky-boeien.ddns.net:1880/getlist?type=geschiedenisboei&boeien_id_name=' + selectedBoei.value)
     .then(response => {
         if (!response.ok) {
             throw new Error('Netwerk reaction was NOT okay');

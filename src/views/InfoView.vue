@@ -48,7 +48,7 @@
   import { ref } from 'vue';
   
   // Het GET-request for boei data
-  fetch('http://141.144.198.96:1880/getList?type=alleboeien')
+  fetch('https://ricky-boeien.ddns.net:1880/getList?type=alleboeien')
   .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -68,7 +68,7 @@
   const boeiList = ref(['']); // This may have to have the '' because sometimes when it doesnt the Boei data won't show :(
 
   // Het GET-request for geselecteerde boei data
-  fetch('http://141.144.198.96:1880/getlist?type=locatievanboei&boeien_id_name=260BE4CC')
+  fetch('https://ricky-boeien.ddns.net:1880/getlist?type=locatievanboei&boeien_id_name=260BE4CC')
     .then(response => {
         if (!response.ok) {
             throw new Error('Netwerk reaction was NOT okay');

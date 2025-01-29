@@ -45,8 +45,8 @@
 <script setup>
   import { ref } from 'vue';
 
-  // Het GET-request for sensor data
-  fetch('http://141.144.198.96:1880/getList?type=allesensors')
+  // Het fetch-request for sensor data
+  fetch('https://ricky-boeien.ddns.net:1880/getList?type=allesensors')
   .then(response => {
       if (!response.ok) {
           throw new Error('Netwerk reaction was NOT okay');
@@ -91,7 +91,7 @@
         VALUES (SYSTIMESTAMP AT TIME ZONE 'Europe/Amsterdam', '${description.value}', '${selectedStatus.value}', '${selectedSensor.value}')`
       };
 
-      fetch('http://141.144.198.96:1880/sqlquery', {
+      fetch('https://ricky-boeien.ddns.net:1880/sqlquery', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
