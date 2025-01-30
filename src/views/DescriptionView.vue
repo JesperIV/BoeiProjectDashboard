@@ -102,6 +102,8 @@
       .catch(error => {
           console.error('Fout bij het versturen van POST-verzoek:', error);
       });
+
+      alert('Sensor status and description have been set successfully.');
   }
 </script>
 

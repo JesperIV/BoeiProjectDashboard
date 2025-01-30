@@ -72,6 +72,8 @@
     state.selectedDate = currentDate.value;
     updateGraphs();
     updateIndividualCharts();
+
+    alert('Selected Boei: ' + state.selectedBoei + '\nSelected Date: ' + state.selectedDate);
   };
   
   fetch('https://ricky-boeien.ddns.net:1880/getList?type=alleboeien')

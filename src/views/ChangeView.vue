@@ -175,9 +175,11 @@
       .then(response => response.json())
       .then(data => {
         console.log('Success:', data);
+        alert('Sensors updated successfully!');
       })
       .catch((error) => {
         console.error('Error:', error);
+        alert('There was an error updating the sensors. Please try again.\nError: ' + error);
       });
     };
   </script>

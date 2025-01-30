@@ -86,6 +86,8 @@
       .catch(error => {
           console.error('Fout bij het versturen van POST-verzoek:', error);
       });
+
+      alert('Sensor created successfully!');
     };
   </script>
   

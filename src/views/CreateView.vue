@@ -81,6 +81,8 @@
       .catch(error => {
           console.error('Fout bij het versturen van POST-verzoek:', error);
       });
+
+      alert('Boei created successfully!');
     };
   </script>
   
